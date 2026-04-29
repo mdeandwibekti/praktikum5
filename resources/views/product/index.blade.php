@@ -84,19 +84,22 @@
                                         <td class="px-6 py-4 text-gray-600 dark:text-gray-400">
                                             {{ $product->user->name ?? 'Unknown' }}
                                         </td>
-                                        <td class="px-6 py-4">
-                                            <div class="flex items-center justify-center gap-4">
+                                        
+                                        {{-- Update di bagian Action Column ini --}}
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                            <div class="flex items-center justify-center gap-2">
+                                                
+                                                {{-- Tombol View tetap dipertahankan --}}
                                                 <a href="{{ route('product.show', $product->id) }}" class="font-bold text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 transition-colors">View</a>
                                                 
                                                 @can('manage-product')
-                                                    <a href="{{ route('product.edit', $product) }}" class="font-bold text-amber-500 hover:text-amber-700 dark:text-amber-400 transition-colors">Edit</a>
-                                                    <form action="{{ route('product.delete', $product->id) }}" method="POST" onsubmit="return confirm('Hapus produk ini?')" class="inline">
-                                                        @csrf @method('DELETE')
-                                                        <button type="submit" class="font-bold text-red-500 hover:text-red-700 dark:text-red-400 transition-colors">Delete</button>
-                                                    </form>
+                                                    {{-- Pemanggilan Component Edit dan Delete --}}
+                                                    <x-edit-button :url="route('product.edit', $product->id)" />
+                                                    <x-delete-button :action="route('product.delete', $product->id)" />
                                                 @endcan
                                             </div>
                                         </td>
+
                                     </tr>
                                 @empty
                                     <tr>

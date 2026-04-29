@@ -3,44 +3,37 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use App\Http\Requests\StoreProductRequest;
 
 class StoreProductRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     */
     public function rules(): array
     {
         return [
-            'name'     => 'required|string|max:255',
-            'quantity' => 'required|integer',
+            'title'    => 'required|string|max:255',
+            'stock'    => 'required|integer',
             'price'    => 'required|numeric',
+            'user_id'  => 'required|exists:users,id', // Validasi dropdown owner
         ];
     }
 
-    /**
-     * Get custom messages for validator errors.
-     */
     public function messages(): array
     {
         return [
-            'name.required' => 'Nama produk wajib diisi.',
-            'name.max'      => 'Nama produk tidak boleh lebih dari 255 karakter.',
+            'title.required' => 'Nama/Title produk wajib diisi.',
+            'title.max'      => 'Nama/Title produk tidak boleh lebih dari 255 karakter.',
 
-            'quantity.required' => 'Jumlah (kuantitas) produk wajib diisi.',
-            'quantity.integer'  => 'Jumlah produk harus berupa angka bulat (tidak boleh desimal).',
+            'stock.required' => 'Jumlah stock produk wajib diisi.',
+            'stock.integer'  => 'Stock produk harus berupa angka bulat.',
 
             'price.required' => 'Harga produk wajib diisi.',
             'price.numeric'  => 'Harga produk harus berupa angka yang valid.',
+            
+            'user_id.required' => 'Pemilik produk (Owner) wajib dipilih.',
         ];
     }
 }

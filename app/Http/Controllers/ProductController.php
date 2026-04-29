@@ -42,7 +42,6 @@ class ProductController extends Controller
     public function store(StoreProductRequest $request)
     {
         $validated = $request->validated();
-        $validated['user_id'] = Auth::id();
 
         try {
             Product::create($validated);
@@ -83,8 +82,10 @@ class ProductController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Product $product)
+    public function edit($id)
     {
+        // Ubah pencarian menggunakan ID manual agar terhindar dari error Route Binding
+        $product = Product::findOrFail($id);
         $users = User::select('id', 'name')
                      ->orderBy('name')
                      ->get();
@@ -95,11 +96,15 @@ class ProductController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Product $product)
+    public function update(Request $request, $id)
     {
+        // Cari produk berdasarkan ID
+        $product = Product::findOrFail($id);
+
+        // Validasi disesuaikan dengan kolom database (title dan stock)
         $validated = $request->validate([
-            'name'     => 'sometimes|string|max:255',
-            'quantity' => 'sometimes|integer',
+            'title'    => 'sometimes|string|max:255',
+            'stock'    => 'sometimes|integer',
             'price'    => 'sometimes|numeric',
             'user_id'  => 'sometimes|exists:users,id',
         ]);
@@ -114,7 +119,7 @@ class ProductController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
+    public function delete($id)
     {
         $product = Product::findOrFail($id);
         $product->delete();
