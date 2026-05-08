@@ -22,12 +22,17 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|unique:categories,name|max:255'
+            'name' => 'required|string|max:255'
         ]);
 
-        Category::create($request->all());
+        $category = Category::create([
+            'name' => $request->name
+        ]);
 
-        return redirect()->route('category.index')->with('success', 'Kategori berhasil ditambahkan.');
+        return response()->json([
+            'message' => 'Category berhasil ditambahkan',
+            'data' => $category
+        ], 201);
     }
 
     public function destroy($id)

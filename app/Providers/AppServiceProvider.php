@@ -3,6 +3,9 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Str;
+use Dedoc\Scramble\Scramble;
+use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\Gate;
 
 class AppServiceProvider extends ServiceProvider
@@ -20,12 +23,15 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Gate::define('manage-product', function ($user) {
-        return $user->role === 'admin';
-    });
+        // Konfigurasi ini agar Scramble hanya membaca rute yang menggunakan awalan 'api/'
+        Scramble::configure()
+            ->routes(function (Route $route) {
+                return Str::startsWith($route->uri, 'api/');
+            });
 
-    Gate::define('manage-category', function ($user) {
-        return $user->role === 'admin'; 
-    });
-}
+        // Konfigurasi ini untuk mengizinkan siapa saja melihat dokumentasi API
+        Gate::define('viewApiDocs', function ($user = null) {
+            return true;
+        });
+    }
 }
