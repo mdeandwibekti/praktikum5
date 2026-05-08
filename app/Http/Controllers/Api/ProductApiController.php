@@ -78,34 +78,41 @@ class ProductApiController extends Controller
     }
 
     // Method PUT: Mengubah data produk
-    public function update(Request $request, int $id)
+    public function update(Request $request, $id)
     {
         try {
+            $request->validate([
+                'title' => 'required|string|max:255',
+                'price' => 'required|numeric',
+                'stock' => 'required|integer',
+                'category_id' => 'required|exists:categories,id'
+            ]);
+
             $product = Product::find($id);
 
             if (!$product) {
-                return response()->json(['message' => 'Product tidak ditemukan'], 404);
+                return response()->json([
+                    'message' => 'Product tidak ditemukan'
+                ], 404);
             }
 
-            // Sesuaikan validasi dengan kolom yang ada di tabel products kamu
-            $validated = $request->validate([
-                'name' => 'required|string|max:255',
-                'category_id' => 'required|exists:categories,id',
-                'price' => 'required|numeric',
-                'stock' => 'required|integer',
+            $product->update([
+                'title' => $request->title,   // 🔥 PENTING
+                'price' => $request->price,
+                'stock' => $request->stock,
+                'category_id' => $request->category_id
             ]);
 
-            $product->update($validated);
-
-            Log::info('Mengubah data produk', ['data' => $product]);
-
             return response()->json([
-                'message' => 'Produk berhasil diubah!',
+                'message' => 'Product berhasil diupdate',
                 'data' => $product
-            ], 200);
+            ]);
+
         } catch (\Throwable $e) {
-            Log::error('Error saat mengubah produk', ['message' => $e->getMessage()]);
-            return response()->json(['message' => 'Terjadi kesalahan pada server'], 500);
+            return response()->json([
+                'message' => 'Terjadi kesalahan pada server',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 
